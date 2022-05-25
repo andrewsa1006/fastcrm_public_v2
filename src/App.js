@@ -1,25 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from "react-router-dom";
 
-function App() {
+import Layout from "./components/Layout";
+import Setup from "./pages/Setup";
+import Login from "./pages/Login";
+
+const App = () => {
+  let firstRun = window.api.firstRun();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={firstRun ? <Setup /> : <Login />} />
+        <Route path="/login" element={<Login />} />
+      </Route>
+    </Routes>
   );
-}
+};
 
 export default App;
