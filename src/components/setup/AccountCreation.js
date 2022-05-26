@@ -22,6 +22,13 @@ const automaticAdminTooltip = (props) => (
   </Tooltip>
 );
 
+const createAnotherUserTooltip = (props) => (
+  <Tooltip id="button-tooltip" {...props}>
+    As the admin account has full access all the time, we recommend creating at
+    least one additional user account for security.
+  </Tooltip>
+);
+
 const temporaryPasswordTooltip = (props) => (
   <Tooltip id="button-tooltip" {...props}>
     Set a temporary password now and new users will be prompted to change it on
@@ -137,7 +144,7 @@ const AccountCreation = (props) => {
     });
   };
 
-  const removeUserFromUsers = (event) => {
+  const removeUserFromUsersArr = (event) => {
     let newUserArray = users.filter((user) => {
       return user.username !== event.target.id;
     });
@@ -148,9 +155,18 @@ const AccountCreation = (props) => {
     setFormValue((prevState) => {
       return {
         ...prevState,
-        permissions: event.target.id,
+        permissions: event.target.value,
       };
     });
+  };
+
+  const validateUserList = () => {
+    if (users.length > 0) {
+      setPageIndex(pageIndex + 1);
+      dispatch(setTempUserArray(users));
+    } else {
+      return;
+    }
   };
 
   const { firstName, lastName, username, email, tempPassword } = formValue;
@@ -207,7 +223,7 @@ const AccountCreation = (props) => {
                   <Button
                     id={user.username}
                     size="sm"
-                    onClick={removeUserFromUsers}
+                    onClick={removeUserFromUsersArr}
                   >
                     <MaterialIcon
                       id={user.username}
@@ -227,16 +243,23 @@ const AccountCreation = (props) => {
       </Table>
 
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Button
-          variant="primary"
-          onClick={() => {
-            setPageIndex(pageIndex + 1);
-            dispatch(setTempUserArray(users));
-          }}
-        >
-          Next
-        </Button>
+        {users.length > 0 ? (
+          <Button variant="primary" onClick={validateUserList}>
+            Next
+          </Button>
+        ) : (
+          <OverlayTrigger
+            placement="top"
+            delay={{ show: 250, hide: 400 }}
+            overlay={createAnotherUserTooltip}
+          >
+            <Button variant="primary" onClick={validateUserList}>
+              Next
+            </Button>
+          </OverlayTrigger>
+        )}
       </div>
+
       {showAdd ? (
         <Form
           className="mt-4"
@@ -359,7 +382,11 @@ const AccountCreation = (props) => {
                 <option>Choose...</option>
                 {permissionsLevels.map((permission) => {
                   return (
-                    <option id={permission.value} key={permission.value}>
+                    <option
+                      id={permission.value}
+                      key={permission.value}
+                      value={permission.value}
+                    >
                       {permission.name}
                     </option>
                   );

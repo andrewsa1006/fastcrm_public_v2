@@ -1,5 +1,6 @@
 const path = require("path");
-const ScriptObject = require("./scripts/ScriptObject");
+const ScriptObject = require("./scripts/SetupScript");
+let fs = require("fs");
 
 const { app, BrowserWindow, ipcMain } = require("electron");
 const isDev = require("electron-is-dev");
@@ -14,8 +15,8 @@ function createWindow(width, height) {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
-      // enableRemoteModule: true,
-      // sandbox: true,
+      enableRemoteModule: true,
+      sandbox: true,
       preload: path.join(__dirname, "../src/preload.js"),
     },
   });
@@ -46,16 +47,24 @@ function createWindow(width, height) {
 
   // ---------- Event Handling ------------
   // Check setup status on initial app load
-  ipcMain.on("CHECK_SETUP_STATUS", (event, arg) => {});
+  ipcMain.handle("CHECK_SETUP_STATUS", (event, arg) => {
+    let SETUP_COMPLETE = false;
+    if (fs.existsSync("C:\\Program Files\\FastCRM\\Locals\\settings.json")) {
+      SETUP_COMPLETE = true;
+    }
+    return SETUP_COMPLETE;
+  });
 
   // Complete setup, create file paths, setup database, store local settings.
   ipcMain.on("COMPLETE_SETUP", (event, config) => {
     const resolveSetup = new Promise((resolve, reject) => {
-      resolve(ScriptObject.finishSetup(event, config));
+      resolve(ScriptObject.setupScript(event, config));
     });
-    resolveSetup.then(() => {
-      // console.log(config);
-    });
+    resolveSetup
+      .then(() => {})
+      .catch((err) => {
+        console.log(err);
+      });
   });
 
   // Open the DevTools.

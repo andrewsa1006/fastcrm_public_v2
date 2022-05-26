@@ -8,6 +8,7 @@ export const businessSlice = createSlice({
       name: "",
       phoneNumber: "",
       primaryEmail: "",
+      financeEmail: "",
       addressLineOne: "",
       addressLineTwo: "",
       country: "",
@@ -15,18 +16,11 @@ export const businessSlice = createSlice({
       state: "",
       zip: "",
     },
-    clients: "Clients",
   },
+
   reducers: {
     updateBusinessModel: (state, action) => {
       state.model = action.payload;
-    },
-
-    updateClientName: (state, action) => {
-      let payloadToString = action.payload.toString();
-      let clientNameAsString =
-        payloadToString.charAt(0).toUpperCase() + payloadToString.slice(1);
-      state.client = clientNameAsString;
     },
 
     updateBusinessInformation: (state, action) => {

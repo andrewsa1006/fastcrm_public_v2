@@ -134,7 +134,7 @@ const BusinessInformationForm = (props) => {
                 defaultValue="Select a State..."
               >
                 <option>Select a State</option>
-                {stateList.length > 1
+                {stateList?.length > 0
                   ? stateList?.map((state, index) => {
                       return <option key={index}>{state.name}</option>;
                     })

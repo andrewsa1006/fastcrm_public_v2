@@ -1,20 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export const applicationSlice = createSlice({
-  name: "counter",
+  name: "application",
   initialState: {
     useType: null,
-    defaultWidth: 1600,
-    defaultHeight: 1200,
     agreedToPrivacyPolicy: false,
     autoSignOn: false,
     autoSignOnUser: "",
     tempUsers: [],
   },
+
   reducers: {
     setUseType: (state, action) => {
       return { ...state, useType: action.payload };
     },
+
     setTempUserArray: (state, action) => {
       return {
         ...state,

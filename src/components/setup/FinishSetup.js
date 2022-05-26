@@ -1,14 +1,33 @@
-import { Card, Button, Container, Form, Tabs, Tab } from "react-bootstrap";
+import {
+  Card,
+  Button,
+  Container,
+  Form,
+  Tabs,
+  Tab,
+  Table,
+} from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { setUseType } from "../../store/slices/applicationSlice";
 import MaterialIcon from "material-icons-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const FinishSetup = (props) => {
   const state = useSelector((state) => state);
   const { application, business } = state;
   const pageIndex = props.pageIndex;
   const setPageIndex = props.setPageIndex;
+  const [adminPassword, setAdminPassword] = useState("");
+
+  const completeSetup = () => {
+    let completedSetupObject = {
+      application,
+      business,
+      adminPassword,
+    };
+    window.api.completeSetup(completedSetupObject);
+  };
+
   return (
     <Container>
       <Button
@@ -38,17 +57,9 @@ const FinishSetup = (props) => {
             name="adminPassword"
             type="password"
             placeholder="Password"
-          />
-        </Form.Group>
-
-        <Form.Group controlId="formGridClientele" className="mb-5">
-          <Form.Label>
-            What term do you use to refer to your clientele?{" "}
-          </Form.Label>
-          <Form.Control
-            name="clientele"
-            type="text"
-            placeholder="e.g. Clients, Partners, etc..."
+            onChange={(e) => {
+              setAdminPassword(e.target.value);
+            }}
           />
         </Form.Group>
       </div>
@@ -56,9 +67,7 @@ const FinishSetup = (props) => {
       <Button
         variant="dark"
         style={{ marginLeft: "40px" }}
-        onClick={() => {
-          window.api.completeSetup(state);
-        }}
+        onClick={completeSetup}
       >
         <Link to="/login">Finish!</Link>
       </Button>
@@ -89,7 +98,6 @@ const FinishSetup = (props) => {
             color: "white",
           }}
           defaultActiveKey="plainText"
-          id="uncontrolled-tab-example"
           className="mb-3"
         >
           <Tab eventKey="plainText" title="Plain Text">
@@ -110,17 +118,33 @@ const FinishSetup = (props) => {
             </span>
             <Card style={{ backgroundColor: "#444", marginTop: "20px" }}>
               <Card.Header>Users</Card.Header>
-              <Card.Body>
-                {application.tempUsers.map((user, index) => {
-                  return <p key={index}>{user.username}</p>;
-                })}
-              </Card.Body>
             </Card>
+            <Table variant="dark">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Username</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {application?.tempUsers.map((user, index) => {
+                  return (
+                    <tr key={user.username}>
+                      <td>{index + 1}</td>
+                      <td>{user.username}</td>
+                      <td>{user.firstName}</td>
+                      <td>{user.lastName}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
           </Tab>
 
           <Tab
             style={{
-              display: "block",
               border: "2px solid white",
               borderRadius: "5px",
               color: "white",
