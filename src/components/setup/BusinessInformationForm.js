@@ -12,14 +12,16 @@ const BusinessInformationForm = (props) => {
   const countryList = getCountries();
   const [stateList, setStateList] = useState({});
   const [formValue, setFormValue] = useState({
-    businessName: "",
-    phone: "",
-    addressOne: "",
-    addressTwo: "",
+    model: "",
+    name: "",
+    phoneNumber: "",
+    financeEmail: "",
+    addressLineOne: "",
+    addressLineTwo: "",
     country: "",
     city: "",
     state: "",
-    zipcode: "",
+    zip: "",
   });
 
   const handleChange = (event) => {
@@ -51,7 +53,7 @@ const BusinessInformationForm = (props) => {
     }
   };
 
-  const { businessName, phone, addressOne, addressTwo, city, zipcode } =
+  const { name, phoneNumber, addressOne, addressTwo, city, zipcode } =
     formValue;
 
   return (
@@ -74,7 +76,7 @@ const BusinessInformationForm = (props) => {
                 name="businessName"
                 type="text"
                 placeholder="Name"
-                value={businessName}
+                value={name}
                 onChange={handleChange}
               />
             </Form.Group>
@@ -85,7 +87,7 @@ const BusinessInformationForm = (props) => {
                 name="phone"
                 type="text"
                 placeholder="Phone Number"
-                value={phone}
+                value={phoneNumber}
                 onChange={handleChange}
               />
             </Form.Group>

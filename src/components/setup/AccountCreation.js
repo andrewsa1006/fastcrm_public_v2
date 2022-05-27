@@ -1,8 +1,14 @@
 import { useState } from "react";
+import MaterialIcon from "material-icons-react";
+import { useDispatch } from "react-redux";
+import { setTempUserArray } from "../../store/slices/applicationSlice";
+import AutomaticAdminTooltip from "../tooltips/AutomaticAdmin";
+import CreateAnotherUserTooltip from "../tooltips/CreateAnotherUserTooltip";
+import OptionalEmailTooltip from "../tooltips/OptionalEmailTooltip";
+import TemporaryPasswordTooltip from "../tooltips/TemporaryPasswordTooltip";
 import {
   Table,
   Container,
-  Tooltip,
   OverlayTrigger,
   Button,
   Form,
@@ -11,37 +17,6 @@ import {
   Badge,
   Alert,
 } from "react-bootstrap";
-import MaterialIcon from "material-icons-react";
-import { useDispatch } from "react-redux";
-import { setTempUserArray } from "../../store/slices/applicationSlice";
-
-const automaticAdminTooltip = (props) => (
-  <Tooltip id="button-tooltip" {...props}>
-    We generate an admin account for you automatically. You'll set a password
-    for this account on the next screen.
-  </Tooltip>
-);
-
-const createAnotherUserTooltip = (props) => (
-  <Tooltip id="button-tooltip" {...props}>
-    As the admin account has full access all the time, we recommend creating at
-    least one additional user account for security.
-  </Tooltip>
-);
-
-const temporaryPasswordTooltip = (props) => (
-  <Tooltip id="button-tooltip" {...props}>
-    Set a temporary password now and new users will be prompted to change it on
-    first sign in.
-  </Tooltip>
-);
-
-const optionalEmailTooltip = (props) => (
-  <Tooltip id="button-tooltip" {...props}>
-    Emails are optional when you are using FastCRM locally. Don't worry, we
-    don't collect any of your information.
-  </Tooltip>
-);
 
 const AccountCreation = (props) => {
   const dispatch = useDispatch();
@@ -53,10 +28,10 @@ const AccountCreation = (props) => {
   const [emailInvalid, setEmailInvalid] = useState(false);
   // const [permissionsInvalid, setPermissionsInvalid] = useState(null);
   const permissionsLevels = [
-    { name: "Read Only", value: "READ_ONLY" },
-    { name: "Read and Write", value: "READ_WRITE" },
-    { name: "Power User", value: "POWER_USER" },
-    { name: "Administrator", value: "ADMINISTRATOR" },
+    { name: "Read Only", value: "4" },
+    { name: "Read and Write", value: "3" },
+    { name: "Power User", value: "2" },
+    { name: "Administrator", value: "1" },
   ];
 
   const [formValue, setFormValue] = useState({
@@ -65,7 +40,8 @@ const AccountCreation = (props) => {
     username: "",
     email: "",
     tempPassword: "",
-    permissions: {},
+    permissions: "",
+    status: "",
   });
 
   const [invalidations, setInvalidations] = useState({
@@ -87,6 +63,7 @@ const AccountCreation = (props) => {
       invalidations.username === null ||
       invalidations.tempPassword === null ||
       invalidations.permissions === null ||
+      invalidations.status === null ||
       emailInvalid ||
       emailInvalid === null
     ) {
@@ -106,6 +83,7 @@ const AccountCreation = (props) => {
         email: "",
         tempPassword: "",
         permissions: "",
+        status: "",
       });
       setShowAdd(false);
     }
@@ -160,6 +138,15 @@ const AccountCreation = (props) => {
     });
   };
 
+  const updateStatus = (event) => {
+    setFormValue((prevState) => {
+      return {
+        ...prevState,
+        status: event.target.value,
+      };
+    });
+  };
+
   const validateUserList = () => {
     if (users.length > 0) {
       setPageIndex(pageIndex + 1);
@@ -203,7 +190,7 @@ const AccountCreation = (props) => {
           <OverlayTrigger
             placement="top"
             delay={{ show: 250, hide: 400 }}
-            overlay={automaticAdminTooltip}
+            overlay={AutomaticAdminTooltip}
           >
             <tr>
               <td>
@@ -250,8 +237,8 @@ const AccountCreation = (props) => {
         ) : (
           <OverlayTrigger
             placement="top"
-            delay={{ show: 250, hide: 400 }}
-            overlay={createAnotherUserTooltip}
+            delay={{ show: 0, hide: 400 }}
+            overlay={CreateAnotherUserTooltip}
           >
             <Button variant="primary" onClick={validateUserList}>
               Next
@@ -301,9 +288,7 @@ const AccountCreation = (props) => {
                 Last name cannot be blank
               </Form.Control.Feedback>
             </Form.Group>
-          </Row>
 
-          <Row className="mb-3">
             <Form.Group as={Col} controlId="formGridUsername">
               <Form.Label>Username</Form.Label>
               <Form.Control
@@ -319,14 +304,16 @@ const AccountCreation = (props) => {
                 Username cannot be blank
               </Form.Control.Feedback>
             </Form.Group>
+          </Row>
 
+          <Row className="mb-3">
             <Form.Group as={Col} controlId="formGridEmail">
               <Form.Label>
                 Email (Optional){" "}
                 <OverlayTrigger
                   placement="top"
                   delay={{ show: 250, hide: 400 }}
-                  overlay={optionalEmailTooltip}
+                  overlay={OptionalEmailTooltip}
                 >
                   <Badge bg="primary">?</Badge>
                 </OverlayTrigger>
@@ -351,7 +338,7 @@ const AccountCreation = (props) => {
                 <OverlayTrigger
                   placement="top"
                   delay={{ show: 250, hide: 400 }}
-                  overlay={temporaryPasswordTooltip}
+                  overlay={TemporaryPasswordTooltip}
                 >
                   <Badge bg="primary">?</Badge>
                 </OverlayTrigger>
@@ -380,7 +367,7 @@ const AccountCreation = (props) => {
                 onChange={updatePermissions}
               >
                 <option>Choose...</option>
-                {permissionsLevels.map((permission) => {
+                {permissionsLevels.map((permission, index) => {
                   return (
                     <option
                       id={permission.value}
@@ -394,6 +381,25 @@ const AccountCreation = (props) => {
               </Form.Select>
               <Form.Control.Feedback tooltip type="invalid">
                 Please choose appropriate permissions for this user
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group as={Col} controlId="formGridStatus">
+              <Form.Label>Status</Form.Label>
+              <Form.Select
+                isInvalid={invalidations.status}
+                defaultValue="Choose..."
+                name="status"
+                onChange={updateStatus}
+              >
+                <option>Choose...</option>
+                <option value={1}>Active</option>
+                <option value={2}>Pending</option>
+                <option value={3}>Inactive</option>
+                <option value={4}>Deleted</option>
+              </Form.Select>
+              <Form.Control.Feedback tooltip type="invalid">
+                Please choose appropriate status for this user
               </Form.Control.Feedback>
             </Form.Group>
           </Row>

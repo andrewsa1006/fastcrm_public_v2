@@ -32,7 +32,7 @@ module.exports = {
   },
 
   insertUserRoles: () => {
-    let sql = `INSERT INTO user_role (role) VALUES ('admin'), ('reader'), ('read_write'), ('super_user')`;
+    let sql = `INSERT INTO user_role (role) VALUES ('ADMINISTRATOR'), ('POWER_USER'), ('READ_WRITE'), ('READ_ONLY')`;
     return sql;
   },
 
@@ -42,7 +42,7 @@ module.exports = {
   },
 
   insertUserStatus: () => {
-    let sql = `INSERT INTO user_status (status) VALUES ('active'), ('pending'), ('inactive'), ('deleted')`;
+    let sql = `INSERT INTO user_status (status) VALUES ('ACTIVE'), ('PENDING'), ('INACTIVE'), ('DELETED')`;
     return sql;
   },
 

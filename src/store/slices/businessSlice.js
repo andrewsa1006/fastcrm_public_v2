@@ -3,11 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 export const businessSlice = createSlice({
   name: "business",
   initialState: {
-    model: "",
     business: {
+      model: "",
       name: "",
       phoneNumber: "",
-      primaryEmail: "",
       financeEmail: "",
       addressLineOne: "",
       addressLineTwo: "",
@@ -20,7 +19,7 @@ export const businessSlice = createSlice({
 
   reducers: {
     updateBusinessModel: (state, action) => {
-      state.model = action.payload;
+      state.business.model = action.payload;
     },
 
     updateBusinessInformation: (state, action) => {
