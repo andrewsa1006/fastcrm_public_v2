@@ -1,4 +1,4 @@
-import { Button, Container, Row, Form, Col } from "react-bootstrap";
+import { Button, Container, Row, Form, Col, Alert } from "react-bootstrap";
 import MaterialIcon from "material-icons-react";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
@@ -7,12 +7,12 @@ import { getCountries, getCountryByName } from "node-countries";
 
 const BusinessInformationForm = (props) => {
   const dispatch = useDispatch();
+  const [showError, setShowError] = useState(false);
   const pageIndex = props.pageIndex;
   const setPageIndex = props.setPageIndex;
   const countryList = getCountries();
   const [stateList, setStateList] = useState({});
   const [formValue, setFormValue] = useState({
-    model: "",
     name: "",
     phoneNumber: "",
     financeEmail: "",
@@ -53,8 +53,17 @@ const BusinessInformationForm = (props) => {
     }
   };
 
-  const { name, phoneNumber, addressOne, addressTwo, city, zipcode } =
-    formValue;
+  const checkForNameAndProceed = () => {
+    if (formValue.name) {
+      setPageIndex(pageIndex + 1);
+      dispatch(updateBusinessInformation(formValue));
+    } else {
+      setShowError(true);
+      setTimeout(() => {
+        setShowError(false);
+      }, 3000);
+    }
+  };
 
   return (
     <Container>
@@ -73,10 +82,9 @@ const BusinessInformationForm = (props) => {
             <Form.Group as={Col} controlId="formGridName">
               <Form.Label>Your Business Name</Form.Label>
               <Form.Control
-                name="businessName"
+                name="name"
                 type="text"
                 placeholder="Name"
-                value={name}
                 onChange={handleChange}
               />
             </Form.Group>
@@ -87,7 +95,6 @@ const BusinessInformationForm = (props) => {
                 name="phone"
                 type="text"
                 placeholder="Phone Number"
-                value={phoneNumber}
                 onChange={handleChange}
               />
             </Form.Group>
@@ -96,9 +103,8 @@ const BusinessInformationForm = (props) => {
           <Form.Group className="mb-3" controlId="formGridAddress1">
             <Form.Label>Address</Form.Label>
             <Form.Control
-              name="addressOne"
+              name="addressLineOne"
               placeholder="1234 Main St"
-              value={addressOne}
               type="text"
               onChange={handleChange}
             />
@@ -107,10 +113,9 @@ const BusinessInformationForm = (props) => {
           <Form.Group className="mb-3" controlId="formGridAddress2">
             <Form.Label>Address 2</Form.Label>
             <Form.Control
-              name="addressTwo"
+              name="addressLineTwo"
               placeholder="Apartment, studio, or floor"
               type="text"
-              value={addressTwo}
               onChange={handleChange}
             />
           </Form.Group>
@@ -150,7 +155,6 @@ const BusinessInformationForm = (props) => {
                 name="city"
                 placeholder="City"
                 type="text"
-                value={city}
                 onChange={handleChange}
               />
             </Form.Group>
@@ -161,29 +165,20 @@ const BusinessInformationForm = (props) => {
                 name="zipcode"
                 placeholder="Zipcode"
                 type="text"
-                value={zipcode}
                 onChange={handleChange}
               />
             </Form.Group>
           </Row>
 
-          <Form.Group className="mb-3" id="formGridCheckbox">
-            <Form.Check
-              type="checkbox"
-              label="I agree to the FastCRM Privacy Policy"
-            />
-          </Form.Group>
-
-          <Button
-            variant="primary"
-            onClick={() => {
-              setPageIndex(pageIndex + 1);
-              dispatch(updateBusinessInformation(formValue));
-            }}
-          >
+          <Button variant="primary" onClick={checkForNameAndProceed}>
             Next
           </Button>
         </Form>
+        {showError ? (
+          <Alert className="mt-4" variant="danger">
+            At a bare minimum, your business name is required.
+          </Alert>
+        ) : null}
       </Container>
     </Container>
   );
